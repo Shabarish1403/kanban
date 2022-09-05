@@ -47,15 +47,21 @@ def createlist(user_name):
     elif request.method=="POST":
         list_name = request.form['name']
         description = request.form['description']
+
         l = List(list_name=list_name,description=description)
-        ul = UserList()
         db.session.add(l)
         db.session.commit()
-        return redirect(url_for("home",username=user_name))
 
-@app.route('/<username>/<listname>/deletelist',methods=["GET","POST"])
-def deletelist(listname,username):
-    del_list = List.query.filter_by(list_name=listname).first()
+        user = User.query.filter_by(user_name=user_name).first()
+        ul = UserList(euser_id=user.user_id,elist_id=l.list_id)
+        db.session.add(ul)
+        db.session.commit()
+
+        return redirect(url_for("home",user_name=user_name))
+
+@app.route('/<user_name>/<list_name>/deletelist',methods=["GET","POST"])
+def deletelist(user_name,list_name):
+    del_list = List.query.filter_by(list_name=list_name).first()
     db.session.delete(del_list)
     db.session.commit()
     return redirect(url_for('home',username=username))

@@ -28,6 +28,7 @@ def home(user_name):
 
     cards = {}
     for list in lists:
+        print(list.cards)
         cards_list = Card.query.filter_by(list_id=list.list_id).all()
         cards[list.list_name] = cards_list
 

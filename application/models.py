@@ -1,3 +1,4 @@
+from tkinter import CASCADE
 from .database import db
 
 class User(db.Model):
@@ -12,12 +13,12 @@ class List(db.Model):
     user_name = db.Column(db.String, db.ForeignKey('user.user_name'), nullable=False)
     list_name = db.Column(db.String, nullable=False)
     description = db.Column(db.String)
-    #cards = db.relationship('Card', secondary='list_card')
+    cards = db.relationship('Card',backref='list',cascade='all,delete-orphan')
 
 class Card(db.Model):
     __tablename__ = 'card'
     card_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    list_id = db.Column(db.Integer, db.ForeignKey('list.list_id'), nullable=False)
     card_name = db.Column(db.String, nullable=False)
     content = db.Column(db.String)
     deadline = db.Column(db.String, nullable=False)
+    list_id = db.Column(db.Integer, db.ForeignKey('list.list_id'), nullable=False)

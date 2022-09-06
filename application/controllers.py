@@ -1,7 +1,7 @@
 from flask import Flask, request, redirect, url_for
 from flask import render_template
 from flask import current_app as app
-from application.models import User, List, Card, UserList, ListCard
+from application.models import User, List, Card
 from .database import db
 
 @app.route("/login", methods=["GET", "POST"])
@@ -23,19 +23,11 @@ def login():
     
 @app.route("/home/<user_name>", methods=["GET","POST"])
 def home(user_name):
-    user = User.query.filter_by(user_name=user_name).first()
-
-    user_lists = UserList.query.filter_by(euser_id=user.user_id).all()
-    lists = []
-    for row in user_lists:
-        lists.append(List.query.filter_by(list_id=row.elist_id).first())
+    lists = List.query.filter_by(user_name=user_name).all()
 
     cards = {}
     for list in lists:
-        list_cards = ListCard.query.filter_by(elist_id=list.list_id).all()
-        cards_list = []
-        for row in list_cards:
-            cards_list.append(Card.query.filter_by(card_id=row.card_id).first())
+        cards_list = Card.query.filter_by(list_id=list.list_id).all()
         cards[list.list_name] = cards_list
 
     return render_template("home.html",user_name=user_name,lists=lists,cards=cards)
@@ -48,51 +40,62 @@ def createlist(user_name):
         list_name = request.form['name']
         description = request.form['description']
 
-        l = List(list_name=list_name,description=description)
-        db.session.add(l)
-        db.session.commit()
-
-        user = User.query.filter_by(user_name=user_name).first()
-        ul = UserList(euser_id=user.user_id,elist_id=l.list_id)
-        db.session.add(ul)
-        db.session.commit()
+        #need to add an alert in browser if listname already exists
+        list = List.query.filter_by(user_name=user_name,list_name=list_name).first()
+        if list == None:
+            l = List(user_name=user_name,list_name=list_name,description=description)
+            db.session.add(l)
+            db.session.commit()
 
         return redirect(url_for("home",user_name=user_name))
 
 @app.route('/<user_name>/<list_name>/deletelist',methods=["GET","POST"])
 def deletelist(user_name,list_name):
-    del_list = List.query.filter_by(list_name=list_name).first()
+    del_list = List.query.filter_by(user_name=user_name,list_name=list_name).first()
     db.session.delete(del_list)
     db.session.commit()
-    return redirect(url_for('home',username=username))
+    return redirect(url_for('home',user_name=user_name))
 
-@app.route('/<username>/<listname>/updatelist',methods=["GET","POST"])
-def updatelist(username,listname):
-    list = List.query.filter_by(list_name=listname).first()
+@app.route('/<user_name>/<list_name>/updatelist',methods=["GET","POST"])
+def updatelist(user_name,list_name):
+    #need to add go back or home button
+    list = List.query.filter_by(user_name=user_name,list_name=list_name).first()
     if request.method == "GET":
-        return render_template('update_list.html',username=username,list=list)
+        return render_template('update_list.html',user_name=user_name,list=list)
     elif request.method == "POST":
-        list.description = request.form['description']
-        db.session.commit()
-        return redirect(url_for('home',username=username))
+        l = List.query.filter_by(user_name=user_name,list_name=request.form['name']).first()
 
+        if list.list_name == request.form['name']:
+            list.description = request.form['description']
+            db.session.commit()
+        elif l == None:
+            list.list_name = request.form['name']
+            list.description = request.form['description']
+            db.session.commit()
+        return redirect(url_for('home',user_name=user_name))
 
-@app.route('/<username>/<listname>/createcard',methods=['POST','GET'])
-def createcard(username,listname):
+@app.route('/<user_name>/<list_name>/createcard',methods=['POST','GET'])
+def createcard(user_name,list_name):
     if request.method == "GET":
-        return render_template('create_card.html',username=username,listname=listname)
+        return render_template('create_card.html',user_name=user_name,list_name=list_name)
     elif request.method == "POST":
         card_name = request.form['name']
         content = request.form['content']
         deadline = request.form['deadline']
-        c = Card(list_name=listname,card_name=card_name,content=content,deadline=deadline)
-        db.session.add(c)
-        db.session.commit()
-        return redirect(url_for("home",username=username))
 
-@app.route('/<username>/<listname>/<cardname>/deletecard',methods=["GET","POST"])
-def deletecard(listname,username,cardname):
-    del_card = List.query.filter_by(card_name=cardname).first()
+        list = List.query.filter_by(user_name=user_name, list_name=list_name).first()
+        card = Card.query.filter_by(list_id = list.list_id, card_name=card_name).first()
+
+        if card == None:
+            c = Card(list_id=list.list_id,card_name=card_name,content=content,deadline=deadline)
+            db.session.add(c)
+            db.session.commit()
+        return redirect(url_for("home",user_name=user_name))
+
+@app.route('/<user_name>/<list_name>/<card_name>/deletecard',methods=["GET","POST"])
+def deletecard(user_name,list_name,card_name):
+    list = List.query.filter_by(user_name=user_name,list_name=list_name).first()
+    del_card = Card.query.filter_by(list_id=list.list_id,card_name=card_name).first()
     db.session.delete(del_card)
     db.session.commit()
-    return redirect(url_for('home',username=username))
+    return redirect(url_for('home',user_name=user_name))

@@ -11,7 +11,7 @@
 </head>
 <body style="padding:20px">
     <div class="d-flex justify-content-between">
-        <h1 class="">Welcome, {{username}}</h1>
+        <h1 class="">Welcome, {{user_name}}</h1>
         <h3 class="">
             <a href="/summary">Summary</a> | 
             <a href="/login">Logout</a>
@@ -19,8 +19,8 @@
     </div>
     <div align="center" class="" style="padding-top:120px">
         <h1>Edit List</h1>
-        <form action="/{{username}}/{{list.list_name}}/updatelist" method="post">
-            <input class="form-control-lg" type="text" name="name" placeholder="Name" style="width:25%" value="{{list.list_name}}" disabled><br><br>
+        <form action="/{{user_name}}/{{list.list_name}}/updatelist" method="post">
+            <input class="form-control-lg" type="text" name="name" placeholder="Name" style="width:25%" value="{{list.list_name}}" required><br><br>
             <textarea class="form-control-lg" name="description" rows="5" cols="30" placeholder="Description">{{list.description}}</textarea><br><br>
             <input class="btn btn-outline-dark btn-sm fs-5" type="submit" value="Save" style="width:10%">
         </form>

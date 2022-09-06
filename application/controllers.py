@@ -1,3 +1,4 @@
+import re
 from flask import Flask, request, redirect, url_for
 from flask import render_template
 from flask import current_app as app
@@ -99,3 +100,35 @@ def deletecard(user_name,list_name,card_name):
     db.session.delete(del_card)
     db.session.commit()
     return redirect(url_for('home',user_name=user_name))
+
+@app.route('/<user_name>/<list_name>/<card_name>/updatecard', methods=['POST','GET'])
+def updatecard(user_name,list_name,card_name):
+    #need to add go back or home button
+    lists = List.query.filter_by(user_name=user_name).all()
+    list = List.query.filter_by(user_name=user_name,list_name=list_name).first()
+    card = Card.query.filter_by(list_id=list.list_id,card_name=card_name).first()
+    if request.method == "GET":
+        return render_template('update_card.html',user_name=user_name,card=card,lists=lists,list=list)
+    elif request.method == "POST":
+        if list.list_name == request.form['list']: #need to alert if same card name exists in same list
+            c = Card.query.filter_by(list_id=list.list_id,card_name=request.form['name']).first()
+            if card.card_name == request.form['name']:
+                card.content = request.form['content']
+                card.deadline = request.form['deadline']
+                db.session.commit()
+            elif c == None:
+                card.card_name = request.form['name']
+                card.content = request.form['content']
+                card.deadline = request.form['deadline']
+                db.session.commit()
+        else:
+            newlist = List.query.filter_by(user_name=user_name,list_name=request.form['list']).first()
+            c = Card.query.filter_by(list_id=newlist.list_id, card_name=request.form['name']).first()            
+            if c == None:
+                card.list_id = newlist.list_id
+                card.card_name = request.form['name']
+                card.content = request.form['content']
+                card.deadline = request.form['deadline']
+                db.session.commit()
+
+        return redirect(url_for('home',user_name=user_name))

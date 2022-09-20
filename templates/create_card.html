@@ -28,17 +28,6 @@
             <input class="btn btn-outline-dark btn-sm fs-5" type="submit" value="Save" style="width:10%">
         </form>
     </div>
-    <script>
-        function TDate() {
-            var UserDate = document.getElementById("calendar").value;
-            var ToDate = new Date();
-
-            if (new Date(UserDate).getTime() <= ToDate.getTime()) {
-                alert("The Date must be Bigger or Equal to today date");
-                return false;
-            }
-            return true;
-        }
-    </script>
+    <script type="text/javascript" src="/static/script.js"></script>
 </body>
 </html>

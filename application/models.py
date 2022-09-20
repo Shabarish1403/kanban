@@ -21,4 +21,5 @@ class Card(db.Model):
     card_name = db.Column(db.String, nullable=False)
     content = db.Column(db.String)
     deadline = db.Column(db.String, nullable=False)
+    toggle = db.Column(db.String, nullable=False)
     list_id = db.Column(db.Integer, db.ForeignKey('list.id'), nullable=False)

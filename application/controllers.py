@@ -5,6 +5,7 @@ from flask import current_app as app
 from application.models import User, List, Card
 from .database import db
 from time import time
+import json
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -93,12 +94,13 @@ def createcard(user_name,list_name):
         card_name = request.form['name']
         content = request.form['content']
         deadline = request.form['deadline']
+        toggle = False
 
         list = List.query.filter_by(list_name=list_name,user=user).first()
         card = Card.query.filter_by(card_name=card_name,list = list).first()
 
         if card == None:
-            c = Card(card_name=card_name,content=content,deadline=deadline,list=list)
+            c = Card(card_name=card_name,content=content,deadline=deadline,toggle=toggle,list=list)
             db.session.add(c)
             db.session.commit()
             flash('Card created successfully')
@@ -146,3 +148,21 @@ def updatecard(user_name,list_name,card_name):
             db.session.commit()
 
         return redirect(url_for('home',user_name=user_name))
+
+@app.route('/toggle',methods=['POST'])
+def toggle():
+    if request.method == 'POST':
+        tog = request.form['toggle-output']
+        id = request.form['card-id']
+
+        card = Card.query.get(id)
+        list = List.query.get(card.list_id)
+        user = User.query.get(list.user_id)
+        
+        if tog == 'true':
+            card.toggle = 1
+        else:
+            card.toggle = 0
+        db.session.commit()
+
+    return redirect(url_for('home',user_name=user.user_name))

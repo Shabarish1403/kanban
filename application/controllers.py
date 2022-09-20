@@ -164,3 +164,24 @@ def toggle(user_name):
         db.session.commit()
 
     return redirect(url_for('home',user_name=user_name))
+
+@app.route('/summary/<user_name>',methods=['GET','POST'])
+def summary(user_name):
+    if request.method == 'GET':
+        user = User.query.filter_by(user_name=user_name).first()
+        labels = []
+        data1 = []
+        data0 = []
+        for list in user.lists:
+            labels.append(list.list_name)
+            temp1 = 0
+            temp0 = 0
+            for card in list.cards:
+                if card.toggle == '1':
+                    temp1 += 1
+                else:
+                    temp0 += 1
+            data1.append(temp1)
+            data0.append(temp0)
+        print(labels, data1, data0)
+        return render_template('summary.html',user_name = user_name, labels = json.dumps(labels), data1 = json.dumps(data1), data0 = json.dumps(data0) )        

@@ -1,9 +1,10 @@
 import re
-from flask import Flask, request, redirect, url_for
+from flask import Flask, request, redirect, url_for, flash
 from flask import render_template
 from flask import current_app as app
 from application.models import User, List, Card
 from .database import db
+from time import time
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -51,6 +52,7 @@ def createlist(user_name):
             l = List(list_name=list_name,description=description,user=user)
             db.session.add(l)
             db.session.commit()
+            flash('List created succesfully')
 
         return redirect(url_for("home",user_name=user_name))
 
@@ -60,6 +62,7 @@ def deletelist(user_name,list_name):
     del_list = List.query.filter_by(list_name=list_name,user=user).first()
     db.session.delete(del_list)
     db.session.commit()
+    flash('List deleted succesfully')
     return redirect(url_for('home',user_name=user_name))
 
 @app.route('/<user_name>/<list_name>/updatelist',methods=["GET","POST"])
@@ -72,13 +75,13 @@ def updatelist(user_name,list_name):
     elif request.method == "POST":
         l = List.query.filter_by(list_name=request.form['name'],user=user).first()
 
-        if list.list_name == request.form['name']:
-            list.description = request.form['description']
-            db.session.commit()
-        elif l == None:
+        if list.list_name == request.form['name'] or l == None:
             list.list_name = request.form['name']
             list.description = request.form['description']
             db.session.commit()
+            flash('List updated succesfully')
+        else:
+            flash('List name already exists')
         return redirect(url_for('home',user_name=user_name))
 
 @app.route('/<user_name>/<list_name>/createcard',methods=['POST','GET'])
@@ -98,6 +101,7 @@ def createcard(user_name,list_name):
             c = Card(card_name=card_name,content=content,deadline=deadline,list=list)
             db.session.add(c)
             db.session.commit()
+            flash('Card created successfully')
         return redirect(url_for("home",user_name=user_name))
 
 @app.route('/<user_name>/<list_name>/<card_name>/deletecard',methods=["GET","POST"])
@@ -107,6 +111,7 @@ def deletecard(user_name,list_name,card_name):
     del_card = Card.query.filter_by(card_name=card_name,list=list).first()
     db.session.delete(del_card)
     db.session.commit()
+    flash('Card deleted successfully')
     return redirect(url_for('home',user_name=user_name))
 
 @app.route('/<user_name>/<list_name>/<card_name>/updatecard', methods=['POST','GET'])
@@ -119,25 +124,25 @@ def updatecard(user_name,list_name,card_name):
     if request.method == "GET":
         return render_template('update_card.html',user_name=user_name,card=card,lists=lists,list=list)
     elif request.method == "POST":
+        flag = False
         if list.list_name == request.form['list']: #need to alert if same card name exists in same list
-            c = Card.query.filter_by(card_name=request.form['name'],list=list).first()
-            if card.card_name == request.form['name']:
-                card.content = request.form['content']
-                card.deadline = request.form['deadline']
-                db.session.commit()
-            elif c == None:
-                card.card_name = request.form['name']
-                card.content = request.form['content']
-                card.deadline = request.form['deadline']
-                db.session.commit()
+            c = Card.query.get(request.form.get('id'))
+            if card.card_name == request.form['name'] or c == None:
+                flag = True
+            else:
+                flash('Card name already exists in the given list')
         else:
             newlist = List.query.filter_by(list_name=request.form['list'],user=user).first()
             c = Card.query.filter_by(card_name=request.form['name'],list=newlist).first()            
             if c == None:
                 card.list_id = newlist.id
-                card.card_name = request.form['name']
-                card.content = request.form['content']
-                card.deadline = request.form['deadline']
-                db.session.commit()
+                flag = True
+            else:
+                flash('Card name already exists in the given list')
+        if flag:
+            card.card_name = request.form['name']
+            card.content = request.form['content']
+            card.deadline = request.form['deadline']
+            db.session.commit()
 
         return redirect(url_for('home',user_name=user_name))

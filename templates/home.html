@@ -5,6 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Home</title>
+  <link rel="icon" type="image/x-icon" href="/static/card-checklist.svg">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
@@ -13,10 +14,25 @@
   <div class="d-flex justify-content-between">
     <h1 class="">Welcome, {{user_name}}</h1>
     <h3 class="">
+      <a href="/{{user_name}}/createlist">Add List</a> |
       <a href="/summary">Summary</a> | 
       <a href="/login">Logout</a>
     </h3>
   </div>
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for message in messages %}
+        <div class="container col-md-4">
+          <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{message}}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
     {% if lists==[] %}
       <div class="position-absolute top-50 start-50 translate-middle">
         <p>There are no lists in the board</p>
@@ -26,10 +42,10 @@
         </h3>
       </div>
     {% else %}
-      <div class="container-fluid row row-cols-1 row-cols-md-5 g-4" style="padding-top:120px" align="center">
+      <div class="row row-cols-1 row-cols-md-5 g-4" style="padding-top:70px" align="center">
         {% for list in lists %}
           <div class="col">
-            <div class="card h-100">
+            <div class="card">
               <img src="../static/image.jpg" class="card-img-top" alt="Image not loaded">
               <div class="card-body">
                 <div class="dropdown">
@@ -38,7 +54,7 @@
                   </button>
                   <ul class="dropdown-menu">
                     <li><a class="dropdown-item" href="/{{user_name}}/{{list.list_name}}/updatelist">Edit</a></li>
-                    <li><a class="dropdown-item" href="/{{user_name}}/{{list.list_name}}/deletelist">Delete</a></li>
+                    <li><a class="dropdown-item" href="/{{user_name}}/{{list.list_name}}/deletelist" onclick="return confirm('Are you sure you want to delete?')">Delete</a></li>
                   </ul>
                 </div><br>
                 {% for l in cards %}
@@ -52,12 +68,16 @@
                             </button>
                             <ul class="dropdown-menu">
                               <li><a class="dropdown-item" href="/{{user_name}}/{{list.list_name}}/{{card.card_name}}/updatecard">Edit</a></li>
-                              <li><a class="dropdown-item" href="/{{user_name}}/{{list.list_name}}/{{card.card_name}}/deletecard">Delete</a></li>
+                              <li><a class="dropdown-item" href="/{{user_name}}/{{list.list_name}}/{{card.card_name}}/deletecard" onclick="return confirm('Are you sure you want to delete?')">Delete</a></li>
                             </ul>
                           </div>
                         </div>
                         <div class="card-body">
-                          <p class="card-text">{{card.content}}</p>
+                          <p class="card-text" style="display:inline">{{card.content}}</p>
+                          <div class="form-check form-switch" action="{{url_for('updatecard',user_name=user_name,list_name=list.list_name,card_name=card.card_name)}}" method="post" style="display:inline; float:left">
+                            <input class="form-check-input" type="checkbox" role="switch" name="toggle" id="{{card.id}}">
+                            <!-- <label class="form-check-label" for="{{card.id}}">Mark as completed</label> -->
+                          </div>
                         </div>
                         <div class="card-footer">
                           <small class="text-muted">deadline {{card.deadline}}</small>

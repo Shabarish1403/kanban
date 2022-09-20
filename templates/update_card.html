@@ -14,7 +14,6 @@
     <div class="d-flex justify-content-between">
         <h1 class="">Welcome, {{user_name}}</h1>
         <h3 class="">
-            <a href="/{{user_name}}/createlist">Add List</a> |
             <a href="/summary">Summary</a> | 
             <a href="/login">Logout</a>
         </h3>
@@ -36,10 +35,6 @@
             <input class="form-control-lg mb-3" type="text" name="name" value="{{card.card_name}}" placeholder="Title" style="width:25%" required><br>
             <textarea class="form-control-lg mb-3" name="content" placeholder="Content" style="width:25%">{{card.content}}</textarea><br>
             <input class="form-control-lg" id="calendar" type="date" name="deadline" value="{{card.deadline}}" onchange="TDate()" style="width:25%"><br><br>
-            <div class="form-check form-switch" style="">
-                <input class="form-check-input" type="checkbox" role="switch" name="toggle" id="{{card.id}}">
-                <label class="form-check-label" for="{{card.id}}">Mark as completed</label>
-            </div><br>
             <input class="btn btn-outline-dark btn-sm fs-5" type="submit" value="Save" style="width:10%">
         </form>
     </div>

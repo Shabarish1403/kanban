@@ -17,7 +17,6 @@
   <div class="d-flex justify-content-between">
     <h1 class="">Welcome, {{user_name}}</h1>
     <h3 class="">
-      <a href="/{{user_name}}/createlist">Add List</a> |
       <a href="/summary">Summary</a> | 
       <a href="/login">Logout</a>
     </h3>
@@ -26,7 +25,7 @@
   {% with messages = get_flashed_messages() %}
     {% if messages %}
       {% for message in messages %}
-        <div class="container col-md-4">
+        <div class="container col-md-3" style="">
           <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{message}}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -37,11 +36,11 @@
   {% endwith %}
 
     {% if lists==[] %}
+    <div class="position-relative">
       <div class="position-absolute top-50 start-50 translate-middle">
         <p>There are no lists in the board</p>
         <h3 align="center">
-          <i class="bi bi-plus-circle"></i>
-          <a href="/{{user_name}}/createlist">Add a list</a>
+          <a href="/{{user_name}}/createlist"><i class="bi bi-plus-circle"></i><br>Add a list</a>
         </h3>
       </div>
 
@@ -90,7 +89,7 @@
                         <div class="card-body">
                           <p class="card-text" style="display:inline">{{card.content}}</p>
 
-                          <form class="d-inline-flex float-start" id="toggle{{card.id}}" action="/toggle" method="post">
+                          <form class="d-inline-flex float-start" id="toggle{{card.id}}" action="/toggle/{{user_name}}" method="post">
                             <div class="form-check form-switch">
                               {% if card.toggle == '1' %}
                               <input class="form-check-input" type="checkbox" role="switch" name="toggle-input" id="{{card.id}}" onclick="toggle({{card.id}})" checked>
@@ -114,8 +113,7 @@
               </div>
 
               <h6 align="center">
-                <i class="bi bi-plus-circle"></i><br>
-                <a href="/{{user_name}}/{{list.list_name}}/createcard">Add card</a>
+                <a href="/{{user_name}}/{{list.list_name}}/createcard"><i class="bi bi-plus-circle"></i><br>Add card</a>
               </h6>
 
               <div class="card-footer">
@@ -125,13 +123,15 @@
             </div>
           </div>
         {% endfor %}
+
+        <div class="position-relative">
+          <h3 class="position-absolute top-50" style="padding-left:75px;">
+            <a href="/{{user_name}}/createlist"><i class="bi bi-plus-circle"></i><br>Add a list</a>
+          </h3>
+        </div>
+
       </div><br><br>
-
-      <h3 align="center">
-        <i class="bi bi-plus-circle"></i>
-        <a href="/{{user_name}}/createlist">Add a list</a>
-      </h3>
-
+    </div>
     {% endif %}
   <script type="text/javascript" src="/static/script.js"></script>
 </body>

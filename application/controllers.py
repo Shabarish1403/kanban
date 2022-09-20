@@ -149,15 +149,13 @@ def updatecard(user_name,list_name,card_name):
 
         return redirect(url_for('home',user_name=user_name))
 
-@app.route('/toggle',methods=['POST'])
-def toggle():
+@app.route('/toggle/<user_name>/',methods=['POST'])
+def toggle(user_name):
     if request.method == 'POST':
         tog = request.form['toggle-output']
         id = request.form['card-id']
 
         card = Card.query.get(id)
-        list = List.query.get(card.list_id)
-        user = User.query.get(list.user_id)
         
         if tog == 'true':
             card.toggle = 1
@@ -165,4 +163,4 @@ def toggle():
             card.toggle = 0
         db.session.commit()
 
-    return redirect(url_for('home',user_name=user.user_name))
+    return redirect(url_for('home',user_name=user_name))

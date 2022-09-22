@@ -7,7 +7,7 @@ from .database import db
 from time import time
 import json
 
-@app.route("/login", methods=["GET", "POST"])
+@app.route("/", methods=["GET", "POST"])
 def login():
     if request.method == 'GET':
         return render_template("login.html")
@@ -49,7 +49,7 @@ def createlist(user_name):
 
         #need to add an alert in browser if listname already exists
         list = List.query.filter_by(list_name=list_name,user=user).first()
-        if list == None:
+        if list is None:
             l = List(list_name=list_name,description=description,user=user)
             db.session.add(l)
             db.session.commit()
@@ -169,9 +169,7 @@ def toggle(user_name):
 def summary(user_name):
     if request.method == 'GET':
         user = User.query.filter_by(user_name=user_name).first()
-        labels = []
-        data1 = []
-        data0 = []
+        labels = data1 = data0 = []
         for list in user.lists:
             labels.append(list.list_name)
             temp1 = 0

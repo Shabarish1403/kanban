@@ -95,10 +95,11 @@ def createcard(user_name,list_name):
         content = request.form['content']
         deadline = request.form['deadline']
         toggle = False
+        print(card_name, content, deadline)
 
         list = List.query.filter_by(list_name=list_name,user=user).first()
         card = Card.query.filter_by(card_name=card_name,list = list).first()
-
+        print(list, card)
         if card == None:
             c = Card(card_name=card_name,content=content,deadline=deadline,toggle=toggle,list=list)
             db.session.add(c)
@@ -169,7 +170,7 @@ def toggle(user_name):
 def summary(user_name):
     if request.method == 'GET':
         user = User.query.filter_by(user_name=user_name).first()
-        labels = data1 = data0 = []
+        (labels, data1, data0) = ([], [], [])
         for list in user.lists:
             labels.append(list.list_name)
             temp1 = 0

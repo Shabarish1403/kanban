@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 
-{% block title %} Summary {% endblock %}
+{% block title %} Home {% endblock %}
 
 {% block body %} 
 
@@ -28,7 +28,7 @@
       </div>
 
     {% else %}
-      <div class="row row-cols-1 row-cols-md-5 g-4" style="padding-top:70px" align="center">
+      <div class="row row-cols-1 row-cols-md-5 g-4" style="padding-top:70px">
         {% for list in lists %}
           <div class="col">
             <div class="card">
@@ -37,34 +37,37 @@
               <div class="card text-bg-dark">
                 <img src="../static/image.jpg" class="card-img" alt="...">
                 <div class="card-img-overlay">
-                  <a href="/{{user_name}}/{{list.list_name}}/updatelist">
-                    <i class="bi bi-pencil-square float-start" style="color:black; font-size:26px"></i>
+                  <a href="/{{user_name}}/{{list.list_name}}/updatelist" data-bs-toggle="modal" data-bs-target="#editList{{list.id}}">
+                    <i class="bi bi-pencil-square" style="color:black; font-size:26px"></i>
                   </a>
                   <a href="/{{user_name}}/{{list.list_name}}/deletelist" onclick="return confirm('Are you sure you want to delete?')">
                     <i class="bi bi-trash3-fill float-end" style="color:black; font-size:26px"></i>
                   </a>
-                  <div class="text-center" style="padding-top:60px">
+                  <div class="text-center" style="padding-top:20px">
                     <button class="btn btn-outline-dark btn-lg text-wrap col-12" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                       {{list.list_name}}
                     </button>
                   </div>
                 </div>
-              </div>  
+              </div>
 
-              <div class="card-body">
-                
+
+              {% include 'update_list.html' %}
+
+
+              <div class="card-body">  
 
                 {% for l in cards %}
                   {% if l == list.list_name %}
                     {% for card in cards[l] %}
-                      <div class="card text-bg-light mb-3" style="max-width: 18rem;">
+                      <div class="card text-bg-light mb-3 text-center" style="max-width: 18rem;">
                         <div class="card-header">
                           <div class="dropdown">
                             <button class="btn btn-secondary dropdown-toggle text-wrap btn-lg col-lg-12" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                               {{card.card_name}}
                             </button>
                             <ul class="dropdown-menu">
-                              <li><a class="dropdown-item" href="/{{user_name}}/{{list.list_name}}/{{card.card_name}}/updatecard">Edit</a></li>
+                              <li><a class="dropdown-item" href="/{{user_name}}/{{list.list_name}}/{{card.card_name}}/updatecard" data-bs-toggle="modal" data-bs-target="#editCard{{list.id}}-{{card.id}}">Edit</a></li>
                               <li><a class="dropdown-item" href="/{{user_name}}/{{list.list_name}}/{{card.card_name}}/deletecard" onclick="return confirm('Are you sure you want to delete?')">Delete</a></li>
                             </ul>
                           </div>
@@ -90,16 +93,15 @@
                           <small class="text-muted">deadline {{card.deadline}}</small>
                         </div>
                       </div>
+                      {% include 'update_card.html' %}
                     {% endfor %}
                   {% endif %}
                 {% endfor %}
               </div>
 
-              <h6 align="center">
-                <a href="/{{user_name}}/{{list.list_name}}/createcard"><i class="bi bi-plus-circle"></i><br>Add card</a>
-              </h6>
+              {% include 'create_card.html' %}
 
-              <div class="card-footer">
+              <div class="card-footer text-center">
                 <small class="text-muted">Last updated 3 mins ago</small>
               </div>
 
@@ -108,9 +110,9 @@
         {% endfor %}
 
         <div class="position-relative">
-          <h3 class="position-absolute top-50" style="padding-left:75px;">
-            <a href="/{{user_name}}/createlist"><i class="bi bi-plus-circle"></i><br>Add a list</a>
-          </h3>
+          <div class="position-absolute top-50" style="padding-left:75px;">
+            {% include 'create_list.html' %}
+          </div>
         </div>
 
       </div><br><br>

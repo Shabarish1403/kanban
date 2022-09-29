@@ -5,10 +5,11 @@
 
 {% block body %} 
 
+
   {% with messages = get_flashed_messages() %}
     {% if messages %}
       {% for message in messages %}
-        <div class="container col-md-3" style="">
+        <div class="container col-md-3">
           <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{message}}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -18,14 +19,17 @@
     {% endif %}
   {% endwith %}
 
-    {% if lists==[] %}
+
+  {% if lists==[] %}
     <div class="position-relative">
-      <div class="position-absolute top-50 start-50 translate-middle">
+      <div class="position-absolute top-100 start-50 translate-middle text-center" style="padding-top:500px">
         <p>There are no lists in the board</p>
-        <h3 align="center">
-          <a href="/{{user_name}}/createlist"><i class="bi bi-plus-circle"></i><br>Add a list</a>
-        </h3>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addList">
+          <i class="bi bi-plus-circle"></i><br>
+          Add List
+        </button>
       </div>
+
 
     {% else %}
       <div class="row row-cols-1 row-cols-md-5 g-4" style="padding-top:70px">
@@ -37,15 +41,15 @@
               <div class="card text-bg-dark">
                 <img src="../static/image.jpg" class="card-img" alt="...">
                 <div class="card-img-overlay">
-                  <a href="/{{user_name}}/{{list.list_name}}/updatelist" data-bs-toggle="modal" data-bs-target="#editList{{list.id}}">
+                  <a href="/updatelist/{{list.id}}" data-bs-toggle="modal" data-bs-target="#editList{{list.id}}">
                     <i class="bi bi-pencil-square" style="color:black; font-size:26px"></i>
                   </a>
-                  <a href="/{{user_name}}/{{list.list_name}}/deletelist" onclick="return confirm('Are you sure you want to delete?')">
+                  <a href="/deletelist/{{list.id}}" onclick="return confirm('Are you sure you want to delete?')">
                     <i class="bi bi-trash3-fill float-end" style="color:black; font-size:26px"></i>
                   </a>
                   <div class="text-center" style="padding-top:20px">
                     <button class="btn btn-outline-dark btn-lg text-wrap col-12" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      {{list.list_name}}
+                      {{list.name}}
                     </button>
                   </div>
                 </div>
@@ -57,25 +61,25 @@
 
               <div class="card-body">  
 
-                {% for l in cards %}
-                  {% if l == list.list_name %}
-                    {% for card in cards[l] %}
+                {% for list_name in cards %}
+                  {% if list_name == list.name %}
+                    {% for card in cards[list_name] %}
                       <div class="card text-bg-light mb-3 text-center" style="max-width: 18rem;">
                         <div class="card-header">
                           <div class="dropdown">
                             <button class="btn btn-secondary dropdown-toggle text-wrap btn-lg col-lg-12" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                              {{card.card_name}}
+                              {{card.name}}
                             </button>
                             <ul class="dropdown-menu">
-                              <li><a class="dropdown-item" href="/{{user_name}}/{{list.list_name}}/{{card.card_name}}/updatecard" data-bs-toggle="modal" data-bs-target="#editCard{{list.id}}-{{card.id}}">Edit</a></li>
-                              <li><a class="dropdown-item" href="/{{user_name}}/{{list.list_name}}/{{card.card_name}}/deletecard" onclick="return confirm('Are you sure you want to delete?')">Delete</a></li>
+                              <li><a class="dropdown-item" href="/updatecard/{{card.id}}" data-bs-toggle="modal" data-bs-target="#editCard{{list.id}}-{{card.id}}">Edit</a></li>
+                              <li><a class="dropdown-item" href="/deletecard/{{card.id}}" onclick="return confirm('Are you sure you want to delete?')">Delete</a></li>
                             </ul>
                           </div>
                         </div>
                         <div class="card-body">
                           <p class="card-text" style="display:inline">{{card.content}}</p>
 
-                          <form class="d-inline-flex float-start" id="toggle{{card.id}}" action="/toggle/{{user_name}}" method="post">
+                          <form class="d-inline-flex float-start" id="toggle{{card.id}}" action="/toggle/{{card.id}}" method="post">
                             <div class="form-check form-switch">
                               {% if card.toggle == '1' %}
                               <input class="form-check-input" type="checkbox" role="switch" name="toggle-input" id="{{card.id}}" onclick="toggle({{card.id}})" checked>
@@ -83,8 +87,7 @@
                               <input class="form-check-input" type="checkbox" role="switch" name="toggle-input" id="{{card.id}}" onclick="toggle({{card.id}})">
                               {% endif %}
                               <input hidden id="tog{{card.id}}" name="toggle-output">
-                              <input hidden id="card{{card.id}}" name="card-id">
-                              <input hidden   type="submit" value="Submit">
+                              <input hidden type="submit" value="Submit">
                             </div>
                           </form>
 
@@ -99,6 +102,10 @@
                 {% endfor %}
               </div>
 
+              <button type="button" class="btn btn-link w-auto align-self-center" data-bs-toggle="modal" data-bs-target="#addCard{{list.id}}">
+                <i class="bi bi-plus-circle"></i><br>
+                Add Card
+              </button>
               {% include 'create_card.html' %}
 
               <div class="card-footer text-center">
@@ -111,12 +118,16 @@
 
         <div class="position-relative">
           <div class="position-absolute top-50" style="padding-left:75px;">
-            {% include 'create_list.html' %}
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addList">
+              <i class="bi bi-plus-circle"></i><br>
+              Add List
+            </button>
           </div>
         </div>
 
       </div><br><br>
     </div>
     {% endif %}
+    {% include 'create_list.html' %}
 
 {% endblock %}

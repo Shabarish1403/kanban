@@ -8,13 +8,13 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            <form action="/{{user_name}}/{{list.list_name}}/updatelist" method="post">
+            <form action="/updatelist/{{list.id}}" method="post">
 
                 <div class="modal-body">
 
                     <div class="mb-3">
                         <label class="form-label">Name</label>
-                        <input class="form-control" type="text" name="name" value="{{list.list_name}}" required>
+                        <input class="form-control" type="text" name="name" value="{{list.name}}" required>
                     </div>
 
                     <div class="mb-3">

@@ -17,9 +17,9 @@
 
     {% block head %}
     <div class="d-flex justify-content-between">
-        <h1 class="">Welcome, {{user_name}}</h1>
+        <h1 class="">Welcome, {{user.name}}</h1>
         <h3 class="">
-        <a href="/summary/{{user_name}}">Summary</a> | 
+        <a href="/summary/{{user.id}}">Summary</a> | 
         <a href="/">Logout</a>
         </h3>
     </div>

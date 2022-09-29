@@ -1,9 +1,3 @@
-<!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addList">
-    <i class="bi bi-plus-circle"></i><br>
-    Add List
-</button>
-  
 <!-- Modal -->
 <div class="modal fade" id="addList" tabindex="-1" aria-labelledby="addListLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -14,13 +8,13 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            <form action="/{{user_name}}/createlist" method="post">
+            <form action="/createlist/{{user.id}}" method="post">
 
                 <div class="modal-body">
 
                     <div class="mb-3">
-                        <label class="form-label" for="listname">Name</label>
-                        <input class="form-control" id="listname" type="text" name="name" required>
+                        <label class="form-label">Name</label>
+                        <input class="form-control" type="text" name="name" required>
                     </div>
 
                     <div class="mb-3">

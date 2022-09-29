@@ -8,27 +8,25 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            <form action="/{{user_name}}/{{list.list_name}}/{{card.card_name}}/updatecard" method="post">
+            <form action="/updatecard/{{card.id}}" method="post">
 
                 <div class="modal-body">
 
                     <div class="mb-3">
                         <select class="form-select text-center" name="list">
                             {% for l in lists %}
-                                {% if l.list_name == list.list_name %}
-                                    <option value="{{l.list_name}}" selected>{{l.list_name}}</option>
+                                {% if l.name == list.name %}
+                                    <option value="{{l.name}}" selected>{{l.name}}</option>
                                 {% else %}
-                                    <option value="{{l.list_name}}">{{l.list_name}}</option>
+                                    <option value="{{l.name}}">{{l.name}}</option>
                                 {% endif %}
                             {% endfor %}
                         </select>
                     </div>
 
-                    <input hidden name="id" value="{{card.id}}">
-
                     <div class="mb-3">
                         <label class="form-label">Title</label>
-                        <input class="form-control" type="text" name="name" value="{{card.card_name}}" required>
+                        <input class="form-control" type="text" name="name" value="{{card.name}}" required>
                     </div>
 
                     <div class="mb-3">

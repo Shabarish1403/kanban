@@ -47,6 +47,11 @@ info:
             <td></td>
           </tr>      
           <tr>
+            <td>update_date</td>
+            <td>String</td>
+            <td>Not Null</td>
+          </tr>      
+          <tr>
             <td>user_id</td>
             <td>Integer</td>
             <td>Foreign Key (user.id), Not Null</td>
@@ -87,6 +92,17 @@ info:
             <td>String</td>
             <td>Not Null</td>
           </tr>
+          <tr>
+            <td>create_date</td>
+            <td>String</td>
+            <td>Not Null</td>
+          </tr>      
+          <tr>
+            <td>complete_date</td>
+            <td>String</td>
+            <td>Not Null</td>
+          </tr>      
+          
           <tr>
             <td>list_id</td>
             <td>Integer</td>

@@ -2,7 +2,7 @@ from flask_restful import Resource, fields, marshal_with, reqparse
 from application.models import User, List, Card
 from application.validation import NotFoundError, BusinessValidationError
 from .database import db
-from datetime import date
+from datetime import datetime as dt
 
 list_fields = {
     'id': fields.Integer,
@@ -31,6 +31,7 @@ class ListAPI(Resource):
         args = list_parser.parse_args()
         name = args.get('name', None)
         description = args.get('description', None)
+        update_date = dt.isoformat(dt.now())
 
         if name is None:
             raise BusinessValidationError(status_code=400, error_code='LIST001', error_message='List Name is required')
@@ -39,7 +40,7 @@ class ListAPI(Resource):
         if l is not None:
             raise BusinessValidationError(status_code=400, error_code='LIST002', error_message='List Name already exists')
         
-        l = List(name=name, description=description, user_id = user_id)
+        l = List(name=name, description=description,update_date=update_date ,user_id = user_id)
         db.session.add(l)
         db.session.commit()
         return l, 201
@@ -111,6 +112,8 @@ class CardAPI(Resource):
         content = args.get('content', None)
         deadline = args.get('deadline', None)
         toggle = False
+        create_date = dt.isoformat(dt.now())
+        complete_date = 'Not completed'
 
         if name is None:
             raise BusinessValidationError(status_code=400, error_code='CARD001', error_message='Card Name is required')
@@ -118,7 +121,7 @@ class CardAPI(Resource):
         if deadline is None:
             raise BusinessValidationError(status_code=400, error_code='CARD002', error_message='Deadline is required')
 
-        today = date.today().strftime('%Y-%m-%d')
+        today = dt.today().strftime('%Y-%m-%d')
         if deadline < today:
             raise BusinessValidationError(status_code=400, error_code='CARD003', error_message='The Date must be bigger or Equal to today date')
 
@@ -126,7 +129,7 @@ class CardAPI(Resource):
         if card is not None:
             raise BusinessValidationError(status_code=400, error_code='CARD004', error_message='Card Name already exists in the given list')
         
-        c = Card(name=name, content=content, deadline=deadline, toggle=toggle, list_id=list_id)
+        c = Card(name=name, content=content, deadline=deadline, toggle=toggle, create_date=create_date, complete_date=complete_date ,list_id=list_id)
         db.session.add(c)
         db.session.commit()
         return c, 201
@@ -166,7 +169,7 @@ class CardAPI(Resource):
         if deadline is None:
             raise BusinessValidationError(status_code=400, error_code='CARD002', error_message='Deadline is required')
 
-        today = date.today().strftime('%Y-%m-%d')
+        today = dt.today().strftime('%Y-%m-%d')
         if deadline < today:
             raise BusinessValidationError(status_code=400, error_code='CARD003', error_message='The Date must be bigger or Equal to today date')
 

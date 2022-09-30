@@ -52,11 +52,12 @@ def createlist(user_id):
     if request.method=="POST":
         list_name = request.form['name']
         description = request.form['description']
+        update_date = dt.isoformat(dt.now())
 
         l = List.query.filter_by(name=list_name,user=user).first()
 
         if l is None:
-            l = List(name=list_name,description=description,user=user)
+            l = List(name=list_name,description=description,update_date=update_date, user=user)
             db.session.add(l)
             db.session.commit()
             flash('List created succesfully')
@@ -103,6 +104,7 @@ def createcard(list_id):
         deadline = request.form['deadline']
         toggle = False
         create_date = dt.isoformat(dt.today())
+        complete_date = 'Not completed'
 
         today = dt.today().strftime('%Y-%m-%d')
         if deadline < today:
@@ -112,7 +114,7 @@ def createcard(list_id):
         card = Card.query.filter_by(name=card_name,list = l).first()
 
         if card == None:
-            c = Card(name=card_name,content=content,deadline=deadline,toggle=toggle,create_date=create_date,list=l)
+            c = Card(name=card_name,content=content,deadline=deadline,toggle=toggle,create_date=create_date,complete_date=complete_date,list=l)
             l.update_date = dt.isoformat(dt.now())
             db.session.add(c)
             db.session.commit()

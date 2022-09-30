@@ -13,7 +13,7 @@
   <title>{% block title %}  {% endblock %}</title>
 </head>
 
-<body style="padding:20px">
+<body style="padding:20px" onload="updateTime({{list_dt}}); updateColorN({{card_dtn}}); updateColorY({{card_dty}})">
 
     {% block head %}
     <div class="d-flex justify-content-between">

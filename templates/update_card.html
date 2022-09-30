@@ -36,7 +36,7 @@
 
                     <div class="mb-3">
                         <label class="form-label">Deadline</label>
-                        <input class="form-control" type="date" name="deadline" value="{{card.deadline}}" id="calendar" onchange="TDate()" required>
+                        <input class="form-control" type="date" name="deadline" value="{{card.deadline}}" id="calendar{{card.id}}" onchange="TDate({{card.id}})" required>
                     </div>
 
                 </div>        

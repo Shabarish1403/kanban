@@ -11,6 +11,7 @@ class List(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String, nullable=False)
     description = db.Column(db.String)
+    update_date = db.Column(db.String, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     cards = db.relationship('Card',backref='list',cascade='all,delete-orphan')
 
@@ -21,4 +22,6 @@ class Card(db.Model):
     content = db.Column(db.String)
     deadline = db.Column(db.String, nullable=False)
     toggle = db.Column(db.String, nullable=False)
+    create_date = db.Column(db.String, nullable=False)
+    complete_date = db.Column(db.String, nullable=False)
     list_id = db.Column(db.Integer, db.ForeignKey('list.id'), nullable=False)

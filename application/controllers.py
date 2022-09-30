@@ -3,6 +3,7 @@ from flask import render_template
 from flask import current_app as app
 from application.models import User, List, Card
 from .database import db
+from datetime import datetime as dt
 import json
 
 @app.route("/", methods=["GET", "POST"])
@@ -29,11 +30,20 @@ def home(user_id):
     user = User.query.get(user_id)
     lists = user.lists
 
+    list_dt = {}
+    card_dtn = {}
+    card_dty = {}
     cards = {}
     for l in lists:
+        list_dt[l.id] = l.update_date
         cards[l.name] = l.cards
+        for c in l.cards:
+            if c.toggle == '0':
+                card_dtn[c.id] = c.deadline
+            else:
+                card_dty[c.id] = [c.deadline, c.complete_date]
 
-    return render_template("home.html",user=user,lists=lists,cards=cards)
+    return render_template("home.html",user=user,lists=lists,cards=cards, list_dt=list_dt, card_dtn=card_dtn, card_dty=card_dty)
 
 
 @app.route('/createlist/<user_id>',methods=["GET","POST"])
@@ -92,11 +102,18 @@ def createcard(list_id):
         content = request.form['content']
         deadline = request.form['deadline']
         toggle = False
+        create_date = dt.isoformat(dt.today())
+
+        today = dt.today().strftime('%Y-%m-%d')
+        if deadline < today:
+            flash('The Date must be Bigger or Equal to today date')
+            return redirect(url_for("home",user_id = user.id))
 
         card = Card.query.filter_by(name=card_name,list = l).first()
 
         if card == None:
-            c = Card(name=card_name,content=content,deadline=deadline,toggle=toggle,list=l)
+            c = Card(name=card_name,content=content,deadline=deadline,toggle=toggle,create_date=create_date,list=l)
+            l.update_date = dt.isoformat(dt.now())
             db.session.add(c)
             db.session.commit()
             flash('Card created successfully')
@@ -122,19 +139,23 @@ def updatecard(card_id):
     user = User.query.get(l.user_id)
 
     if request.method == "POST":
+        today = dt.today().strftime('%Y-%m-%d')
+        if request.form['deadline'] < today:
+            flash('The Date must be Bigger or Equal to today date')
+            return redirect(url_for("home",user_id = user.id))
+
         flag = False
+        newlist = List.query.filter_by(name=request.form['list'],user=user).first()
+        c = Card.query.filter_by(name=request.form['name'],list=newlist).first()
         if l.name == request.form['list']:
-            c = Card.query.filter_by(name=request.form['name'],list=l).first()
             if card.name == request.form['name'] or c == None:
                 flag = True
-        else:
-            newlist = List.query.filter_by(name=request.form['list'],user=user).first()
-            c = Card.query.filter_by(name=request.form['name'],list=newlist).first()            
-            if c == None:
-                card.list_id = newlist.id
-                flag = True
+        elif c == None:
+            card.list_id = newlist.id
+            flag = True
 
         if flag:
+            newlist.update_date = dt.isoformat(dt.now())
             card.name = request.form['name']
             card.content = request.form['content']
             card.deadline = request.form['deadline']
@@ -156,8 +177,10 @@ def toggle(card_id):
         
         if tog == 'true':
             card.toggle = 1
+            card.complete_date = dt.isoformat(dt.today())
         else:
             card.toggle = 0
+            card.complete_date = 'Not completed'
         db.session.commit()
 
     return redirect(url_for('home',user_id = l.user_id))
